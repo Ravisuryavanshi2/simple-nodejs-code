@@ -7,13 +7,12 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
-
-  name: MySelfHostedPool
+  name: MySelfHostedPool  # Use your self-hosted agent pool here
+  # Or use Microsoft-hosted if available:
+  # vmImage: ubuntu-latest
 
 variables:
   imageName: 'nodejs-app'
-
 
 steps:
 # Install Node.js
@@ -22,16 +21,16 @@ steps:
     versionSpec: '20.x'
   displayName: 'Install Node.js'
 
-# Build your Node.js app
+# Install dependencies and build your Node.js app
 - script: |
     npm install
     npm run build
   displayName: 'npm install and build'
 
-# Login to ACR and Push Docker Image
+# Login to Azure and push Docker image to ACR
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'azureconnection'   # <-- use the exact name shown in your Azure DevOps
+    azureSubscription: 'azureconnection'   # 🔹 your service connection name (check spelling exactly)
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
@@ -44,10 +43,9 @@ steps:
       echo "Pushing Docker image..."
       docker push acrapp.azurecr.io/$(imageName):$(Build.BuildId)
 
-      echo "Tagging the image as latest..."
+      echo "Tagging as latest..."
       docker tag acrapp.azurecr.io/$(imageName):$(Build.BuildId) acrapp.azurecr.io/$(imageName):latest
       docker push acrapp.azurecr.io/$(imageName):latest
-  displayName: 'Build and Push Docker image to ACR'
-
+  displayName: 'Build and Push Docker Image to ACR'
 
 
