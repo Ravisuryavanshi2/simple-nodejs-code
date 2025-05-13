@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 variables:
   imageName: 'nodejs-app'
@@ -28,7 +28,7 @@ steps:
 # Login to ACR and Push Docker Image
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'azure-connection'   # <-- use the Service Connection name you created
+    azureSubscription: 'azure-connection'   # <-- Ensure this matches the exact service connection name
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
@@ -41,8 +41,9 @@ steps:
       echo "Pushing Docker image..."
       docker push acrapp.azurecr.io/$(imageName):$(Build.BuildId)
 
-      echo "Tagging as latest..."
+      echo "Tagging the image as latest..."
       docker tag acrapp.azurecr.io/$(imageName):$(Build.BuildId) acrapp.azurecr.io/$(imageName):latest
       docker push acrapp.azurecr.io/$(imageName):latest
   displayName: 'Build and Push Docker image to ACR'
+
 
