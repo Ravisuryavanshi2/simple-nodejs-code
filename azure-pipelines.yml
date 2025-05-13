@@ -28,7 +28,7 @@ steps:
 # Login to ACR and Push Docker Image
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'azure-connection'   # <-- Ensure this matches the exact service connection name
+    azureSubscription: 'azureconnection'   # <-- use the exact name shown in your Azure DevOps
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
@@ -45,5 +45,6 @@ steps:
       docker tag acrapp.azurecr.io/$(imageName):$(Build.BuildId) acrapp.azurecr.io/$(imageName):latest
       docker push acrapp.azurecr.io/$(imageName):latest
   displayName: 'Build and Push Docker image to ACR'
+
 
 
