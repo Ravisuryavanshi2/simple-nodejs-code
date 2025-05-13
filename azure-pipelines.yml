@@ -1,0 +1,48 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  imageName: 'nodejs-app'
+
+steps:
+# Install Node.js
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Install Node.js'
+
+# Build your Node.js app
+- script: |
+    npm install
+    npm run build
+  displayName: 'npm install and build'
+
+# Login to ACR and Push Docker Image
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'azure-connection'   # <-- use the Service Connection name you created
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      echo "Logging into ACR..."
+      az acr login --name acrapp
+
+      echo "Building Docker image..."
+      docker build -t acrapp.azurecr.io/$(imageName):$(Build.BuildId) .
+
+      echo "Pushing Docker image..."
+      docker push acrapp.azurecr.io/$(imageName):$(Build.BuildId)
+
+      echo "Tagging as latest..."
+      docker tag acrapp.azurecr.io/$(imageName):$(Build.BuildId) acrapp.azurecr.io/$(imageName):latest
+      docker push acrapp.azurecr.io/$(imageName):latest
+  displayName: 'Build and Push Docker image to ACR'
+
