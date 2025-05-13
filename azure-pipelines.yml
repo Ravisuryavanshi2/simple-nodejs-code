@@ -9,8 +9,8 @@ trigger:
 pool:
   #name: MySelfHostedPool  # Use your self-hosted agent pool here
   # Or use Microsoft-hosted if available:
-   vmImage: ubuntu-latest
-   name: 'MySelfHostedPool'
+  vmImage: ubuntu-latest
+  #name: 'MySelfHostedPool'
 
 variables:
   imageName: 'nodejs-app'
