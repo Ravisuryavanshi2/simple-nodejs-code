@@ -9,8 +9,11 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+  name: MySelfHostedPool
+
 variables:
   imageName: 'nodejs-app'
+
 
 steps:
 # Install Node.js
